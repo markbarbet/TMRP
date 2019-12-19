@@ -49,9 +49,24 @@ class TMRP():
         self.termoleculars=self.build_termolecular_reactions()
         
         
+    def reaction_type_filter(self,types=[]):
         
+        '''Function to take a list of reaction types in cantera and return
+           indices for all instances of these reactions in a mechanism'''
+        if types==[]:
+            try:
+                return np.arange(len(self.gas.reactions()))
+            except:
+                print('Ensure that TMRP.gas is provided with a non-zero list of reactions')
+        else:
+            reaction_list=[]
+            for i in range(len(self.gas.reactions())):
+                if any(text in self.gas.reaction(i).__class__.__name__ for text in types):
+                    reaction_list.append(i)
+            return np.array(reaction_lists)
         
     def find_R1(self):
+        #search through gas and return all reactions that are Falloff, or Three-Body reactions
         
         
     def find_R2(self):
@@ -74,7 +89,11 @@ class TMRP():
     def build_new_solution(self):
         
         
-    def write_cti(self,default_name_convention=True,outputname=''):
+    def write_termolecular_cti(self,default_name_convention=True,outputname=''):
+        
+    def build_termolecular_dataframe(self):
+        '''Output a pandas dataframe with the termolecular reaction and the 
+           reactions used to construct it'''
 
 
 class termolecular_reaction():
@@ -85,5 +104,8 @@ class termolecular_reaction():
         self.id_list=id_list
         
         
-    def rate
+    def rate_estimate(self):
+        
+        
+    def build_rxn_string(self):
         
