@@ -29,12 +29,17 @@ class TMRP():
         
     #Function to perform the screening procedure
     def run_screening(self):
-        
-        #Function to find pairs
-        
-    def find_pairs(self):     
         #Function to create gas
         self.build_gas_object()
+        #Function to find pairs
+        self.find_pairs()
+        
+        
+        #Build list of termolecular reaction objects
+        self.termoleculars=self.build_termolecular_reactions()
+        
+    def find_pairs(self):     
+        
         
         #Function to find R1's
         self.ids_r1=self.find_R1()
@@ -45,8 +50,7 @@ class TMRP():
         #Build reaction pairs
         self.id_pairs=self.get_pairs()
         
-        #Build list of termolecular reaction objects
-        self.termoleculars=self.build_termolecular_reactions()
+        
         
         
     def reaction_type_filter(self,types=[]):
@@ -67,7 +71,17 @@ class TMRP():
         
     def find_R1(self):
         #search through gas and return all reactions that are Falloff, or Three-Body reactions
-        
+        rxn_types=['three_body_reaction','falloff_reaction']
+        initial_indices=self.reaction_type_filter(types=rxn_types)
+        forward_indices=[]
+        reverse_indices=[]
+        for i, el in enumerate(initial_indices):
+            if len(self.gas.reaction(el).products)-1==len(self.gas.reaction(el).reactants):
+                forward_indices.append(el)
+            elif len(self.gas.reaction(el).reactants)-1==len(self.gas.reaction(el).products):
+                reverse_indices.append(el)
+                
+        return (forward_indices,reverse_indices)
         
     def find_R2(self):
         
@@ -98,10 +112,12 @@ class TMRP():
 
 class termolecular_reaction():
     
-    def __init__(self,reaction1=None,reaction2=None,id_list=[]):
+    def __init__(self,reaction1=None,reaction2=None,id_list=[],reversed_tuple=(False,False)):
         self.reaction1=reaction1
         self.reaction2=reaction2
         self.id_list=id_list
+        self.reversed_r1=reversed_tuple[0]
+        self.reversed_r2=reversed_tuple[1]
         
         
     def rate_estimate(self):
